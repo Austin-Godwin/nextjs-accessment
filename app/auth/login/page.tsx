@@ -4,13 +4,13 @@ import Background from "@/app/ui/background";
 import backgroundImage from "@/public/background5.jpg"
 import { roboto } from "@/app/ui/fonts";
 import NavLinks from "@/app/ui/nav-links";
-import MaterialTextField from "@/app/ui/material-text-field";
+// import MaterialTextField from "@/app/ui/material-text-field";
 import { Box, Button } from "@mui/material";
 import { useState } from "react";
 import * as yup from 'yup';
 import { useFormik } from "formik";
 import CustomTextField from "@/app/ui/customTextField";
-import { Password } from "@mui/icons-material";
+// import { Password } from "@mui/icons-material";
 
 export default function Login() {
 
@@ -82,8 +82,7 @@ export default function Login() {
                     </Box>
                     <div className='justify-items-center mt-5'>
                         <p className='text-gray-800'>
-                            Don't have an account yet? <NavLinks key='Login'
-                                href="/auth/sign-up">sign up</NavLinks>
+                            Don&#39;t have an account yet? <NavLinks key='Login' href="/auth/sign-up">sign up</NavLinks>
                         </p>
                     </div>
                 </div>

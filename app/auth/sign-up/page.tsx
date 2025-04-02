@@ -1,7 +1,7 @@
 "use client"
 
 import backgroundImage from '@/public/background5.jpg'
-import { lusitana, roboto } from '@/app/ui/fonts'
+import { roboto } from '@/app/ui/fonts'
 import Background from "@/app/ui/background";
 import NavLinks from '@/app/ui/nav-links';
 import { Box, Button } from "@mui/material";

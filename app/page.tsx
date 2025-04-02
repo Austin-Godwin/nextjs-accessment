@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import backgroundImage from "@/public/background3.jpg";
 import Background from "@/app/ui/background"
-import AuthForm from "./test2";
+// import AuthForm from "./test2";
 
 export default function Home() {
   return (

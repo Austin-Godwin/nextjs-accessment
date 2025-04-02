@@ -9,7 +9,7 @@ export const lusitana = Lusitana({
     subsets: ['latin']
 });
 
-export const roboto = Lusitana({
+export const roboto = Roboto({
     weight: ['400', '700'],
     subsets: ['latin']
 });
