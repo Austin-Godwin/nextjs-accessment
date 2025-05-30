@@ -7,7 +7,7 @@ import NavLinks from "@/app/ui/nav-links";
 // import MaterialTextField from "@/app/ui/material-text-field";
 import { Box, Button } from "@mui/material";
 // import { Exclamation } from "@mui/material";
-import { useState, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
 import * as yup from 'yup';
 import { useFormik } from "formik";
 import CustomTextField from "@/app/ui/customTextField";
@@ -18,9 +18,6 @@ import { useSearchParams } from "next/navigation";
 export default function Login() {
 
     const [showPassword, setShowPassword] = useState(false);
-
-    const searchParams = useSearchParams();
-    const callbackUrl = searchParams.get('callbackUrl') || '/home';
     const [errorMessage, formAction] = useActionState(authenticate, undefined);
     const [isPending, startTransition] = useTransition();
 
@@ -28,6 +25,13 @@ export default function Login() {
         email: yup.string().email("Enter a valid email address").required("Email Address is required"),
         password: yup.string().min(6, "Password must not be at least 6 characters").required("Password is required"),
     });
+
+    function Redirect() {
+        const searchParams = useSearchParams();
+        const callbackUrl = searchParams.get('callbackUrl') || '/home';
+
+        return <input type="hidden" name="redirectTo" value={callbackUrl} />
+    }
 
     const formik = useFormik({
         initialValues: {
@@ -90,8 +94,10 @@ export default function Login() {
                             onTogglePassword={() => setShowPassword((prev) => !prev)}
                         />
 
-                        <input type="hidden" name="redirectTo" value={callbackUrl} />
-                        <Button color='primary' type="submit" variant="contained" size='large' disabled={formik.isSubmitting || isPending}>{isPending? 'Logging in...' : 'Login'}</Button>
+                        <Suspense>
+                            <Redirect />
+                        </Suspense>
+                        <Button color='primary' type="submit" variant="contained" size='large' disabled={formik.isSubmitting || isPending}>{isPending ? 'Logging in...' : 'Login'}</Button>
 
                         <div className="flex h-8 items-end space-x-1">
                             {errorMessage && (
