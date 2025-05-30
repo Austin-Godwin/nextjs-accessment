@@ -6,15 +6,23 @@ import { roboto } from "@/app/ui/fonts";
 import NavLinks from "@/app/ui/nav-links";
 // import MaterialTextField from "@/app/ui/material-text-field";
 import { Box, Button } from "@mui/material";
-import { useState } from "react";
+// import { Exclamation } from "@mui/material";
+import { useState, useTransition } from "react";
 import * as yup from 'yup';
 import { useFormik } from "formik";
 import CustomTextField from "@/app/ui/customTextField";
-// import { Password } from "@mui/icons-material";
+import { useActionState } from "react";
+import { authenticate } from "@/app/lib/actions";
+import { useSearchParams } from "next/navigation";
 
 export default function Login() {
 
     const [showPassword, setShowPassword] = useState(false);
+
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl') || '/home';
+    const [errorMessage, formAction] = useActionState(authenticate, undefined);
+    const [isPending, startTransition] = useTransition();
 
     const validationSchema = yup.object({
         email: yup.string().email("Enter a valid email address").required("Email Address is required"),
@@ -27,12 +35,20 @@ export default function Login() {
             password: '',
         },
         validationSchema,
-        onSubmit: (values) => {
+        onSubmit: (values, { setSubmitting }) => {
+            const formData = new FormData();
+            formData.append('email', values.email);
+            formData.append('password', values.password);
+
+            startTransition(() => {
+                formAction(formData);
+            });
+
+            setSubmitting(false);
+
             alert(JSON.stringify(values, null, 2));
         }
     });
-
-
 
     return (
         <div className="relative grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -74,11 +90,17 @@ export default function Login() {
                             onTogglePassword={() => setShowPassword((prev) => !prev)}
                         />
 
-                        <Button color='primary' type="submit" variant="contained" size='large'>Login</Button>
+                        <input type="hidden" name="redirectTo" value={callbackUrl} />
+                        <Button color='primary' type="submit" variant="contained" size='large' disabled={formik.isSubmitting || isPending}>{isPending? 'Logging in...' : 'Login'}</Button>
 
-                        {/* <div className="flex h-8 items-end space-x-1"> */}
-                        {/* Add form errors here */}
-                        {/* </div> */}
+                        <div className="flex h-8 items-end space-x-1">
+                            {errorMessage && (
+                                <>
+                                    {/* <ExclamationCircleIcon className="h-5 w-5 text-red-500" /> */}
+                                    <p className="text-sm text-red-500">{errorMessage}</p>
+                                </>
+                            )}
+                        </div>
                     </Box>
                     <div className='justify-items-center mt-5'>
                         <p className='text-gray-800'>

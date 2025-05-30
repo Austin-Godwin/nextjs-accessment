@@ -5,19 +5,22 @@ import { roboto } from '@/app/ui/fonts'
 import Background from "@/app/ui/background";
 import NavLinks from '@/app/ui/nav-links';
 import { Box, Button } from "@mui/material";
-import { useState } from 'react';
+import { useState, useActionState, useTransition } from 'react';
+import { signUp } from '@/app/lib/actions';
 
 import * as yup from "yup";
-import { useFormik} from "formik";
+import { useFormik } from "formik";
 import CustomTextField from '@/app/ui/customTextField';
 
 export default function SignUp() {
 
+  const [errorMessage, formAction] = useActionState(signUp, undefined);
+  const [isPending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
 
   const validationSchema = yup.object({
     username: yup.string().min(3, "Username must be at least 3 characters").max(20, "Username name must not exceed 20 characters").required("Username is required"),
-    email: yup.string().email(({value})=>`${value} is not a valid email`).required('Email is required'),
+    email: yup.string().email(({ value }) => `${value} is not a valid email`).required('Email is required'),
     password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
   });
 
@@ -28,8 +31,17 @@ export default function SignUp() {
       password: '',
     },
     validationSchema,
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: (values, { setSubmitting }) => {
+      const formData = new FormData();
+      formData.append('email', values.email);
+      formData.append('username', values.username);
+      formData.append('password', values.password);
+
+      startTransition(() => {
+        formAction(formData);
+      });
+
+      setSubmitting(false);
     },
   });
 
@@ -96,9 +108,17 @@ export default function SignUp() {
             />
 
             {/* <Button buttonText='Confirm'/> */}
-            
-            <Button color='primary' type="submit" variant="contained" size='large'>Continue</Button>
-              
+
+            <Button color='primary' type="submit" variant="contained" size='large' disabled={formik.isSubmitting || isPending}>{isPending ? 'Signing Up...' : 'Continue'}</Button>
+            <div className="flex h-8 items-end space-x-1">
+              {errorMessage && (
+                <>
+                  {/* <ExclamationCircleIcon className="h-5 w-5 text-red-500" /> */}
+                  <p className="text-sm text-red-500">{errorMessage}</p>
+                </>
+              )}
+            </div>
+
             {/* <div className="flex h-8 items-end space-x-1"> */}
             {/* Add form errors here */}
             {/* </div> */}
